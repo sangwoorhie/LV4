@@ -25,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   CommentLikes.init({
-    likedCount: {
+    likeId: {
       allowNull: false,
       autoIncrement: true,
       primaryKey: true,

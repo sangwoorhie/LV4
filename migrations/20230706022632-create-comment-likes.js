@@ -3,7 +3,7 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable('CommentLikes', {
-      likedCount: {
+      likeId: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,

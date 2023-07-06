@@ -6,7 +6,7 @@ const { Op } = require("sequelize");
 
 
 // 1. 게시글 생성 POST : localhost:3018/api/posts (성공)
-router.post("/posts", Authmiddleware, async (req, res) => {
+router.post("/", Authmiddleware, async (req, res) => {
 try{
     const { userId } = res.locals.user;
     const { title, content } = req.body;
@@ -29,32 +29,35 @@ try{
 
 
 // 2. 게시글 목록조회  GET : localhost:3018/api/posts (성공)
-router.get('/posts', async (req, res) => {
+router.get('/', async (req, res) => {
     const postList = await Posts.findAll({
+        raw: true, // 모델 인스턴스가 아닌, 데이터만 반환.
         attributes: ['postId', 'title', 'createdAt', 'updatedAt'],
-        include: [{model: Users, attributes: ["nickname"]}, {model: PostLikes, attributes: ["likedCount"] }],
+        include: [{model: Users, attributes: ["nickname"]}, {model: PostLikes, attributes: ["likeId"]}],
         order: [['createdAt', 'DESC']], //createdAt을 기준으로 내림차순 정렬
     });
     return res.status(200).json({"게시글 목록": postList}); // data
 });
 
 
-// likedCount 가 "좋아요 수"가 아닌 넘버링 형태로 나오고, LikedCount는 좋아요수는 나오지만 밑에 전체내용 다나옴
 
 
 // 3. 게시글 상세조회 GET : localhost:3018/api/posts/:postId (성공) 
-router.get('/posts/:postId', async (req, res) => {
+router.get('/:postId', async (req, res) => {
     try{
-        if(!req.params){ return res.status(400).json({message: "데이터 형식이 올바르지 않습니다."})}
+        if(!req.params || !req.body){ return res.status(400).json({message: "데이터 형식이 올바르지 않습니다."})}
 
     const { postId } = req.params;
     const post = await Posts.findOne({ //Posts모델에서 아래 5가지 컬럼을, Users모델에서 nickname 컬럼을 가져온다.
+        raw: true, // 모델 인스턴스가 아닌, 데이터만 반환.
         attributes: ['postId', 'title', 'content', 'createdAt', 'updatedAt'],
-        include: [{model: Users, attributes: ['nickname']}, {model: PostLikes, attributes: ["likedCount"] }],
+        include: [{model: Users, attributes: ['nickname']}],
         where: { postId } // Posts모델의 postId를 기준으로 조회한다.
     })
-    const LikedCount = await PostLikes.findAndCountAll({where: {postId}});
-    return res.status(200).json({"게시글 조회": post, "좋아요 수": LikedCount}); // data //singlePost
+    const LikedCount = await PostLikes.count({where: {postId: Number(postId)}});
+ 
+    if(!post) {res.status(404).json({message: "게시글이 존재하지 않습니다."})}
+    return res.status(200).json({"게시글 조회": post, "좋아요": LikedCount}); // data //singlePost
 }catch(error){
     console.log(error);
     return res.status(400).json({message:"게시글 조회에 실패했습니다."})}
@@ -76,7 +79,7 @@ router.get('/posts/:postId', async (req, res) => {
 
 
 // 4. 게시글 수정 PUT : localhost:3018/api/posts/:postId (성공)
-router.put('/posts/:postId', Authmiddleware, async (req, res) => {
+router.put('/:postId', Authmiddleware, async (req, res) => {
     const { postId } = req.params;
     const { userId } = res.locals.user;
     const { title, content } = req.body;
@@ -98,7 +101,7 @@ router.put('/posts/:postId', Authmiddleware, async (req, res) => {
 
 
 // 5. 게시글 삭제 DELETE : localhost:3018/api/posts/:postId (성공)
-router.delete('/posts/:postId', Authmiddleware, async (req, res) => {
+router.delete('/:postId', Authmiddleware, async (req, res) => {
     const { postId } = req.params;
     const { userId } = res.locals.user;
 

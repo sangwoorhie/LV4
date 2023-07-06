@@ -10,7 +10,7 @@ const passwordCheck = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]{4,}$/;
 
 
 // 1. 회원가입 POST : localhost:3018/api/users/signup (성공)
-router.post("/users/signup", async (req, res) => {
+router.post("/signup", async (req, res) => {
   const { email, password, confirmPassword, nickname, age, gender, profileImage } = req.body;
   
   try{const isExistUser = await Users.findOne({ where: { email } });
@@ -26,7 +26,7 @@ router.post("/users/signup", async (req, res) => {
   } else if (!confirmPassword) {
     return res.status(409).json({ message: "확인비밀번호를 입력해주세요." });
   } else if (!nickname) {
-    return res.status(409).json({ message: "이름을 입력해주세요." });
+    return res.status(409).json({ message: "닉네임을 입력해주세요." });
   } else if (!age) {
     return res.status(409).json({ message: "나이를 입력해주세요." });
   } else if (!gender) {
@@ -48,7 +48,7 @@ catch(error){console.log(error)
 
 
 // 2. 로그인 POST : localhost:3018/api/users/login (성공)
-router.post("/users/login", async (req, res) => {
+router.post("/login", async (req, res) => {
     const { email, password } = req.body;
     const user = await Users.findOne({ where : { email }});
     if(!user) {
@@ -68,14 +68,14 @@ router.post("/users/login", async (req, res) => {
 
 
 // 3. 사용자 정보 조회 GET : localhost:3018/api/users/:userId (성공)
-router.get("/users/:userId", async (req, res) => {
+router.get("/:userId", async (req, res) => {
   const { userId } = req.params;
 
   if(!userId){
     return res.status(404).json({message: "사용자 정보가 조회되지 않습니다."})
   }
   const user = await Users.findOne({ 
-    attributes: ["userId", "email",'nickname', 'age', 'gender', 'profileImage', "createdAt", "updatedAt"],
+    attributes: ["userId", "email",'nickname', 'gender', 'profileImage', "createdAt", "updatedAt"],
 })
   return res.status(200).json({UserInfomation: user})
 
@@ -87,7 +87,7 @@ router.get("/users/:userId", async (req, res) => {
 
 
 // 4. 사용자 정보 수정 PATCH : localhost:3018/api/users/:userId (성공)
-router.patch("/users/:userId", async(req, res) => { // put 전체수정, patch 부분수정
+router.patch("/:userId", async(req, res) => { // put 전체수정, patch 부분수정
 
   const { userId } = req.params;
   const user = await Users.findOne({
@@ -113,9 +113,8 @@ router.patch("/users/:userId", async(req, res) => { // put 전체수정, patch �
 })
 
 
-
-// 5. 사용자 정보 삭제 DELETE : localhost:3018/api/users/:userId  (성공)
-router.delete("/users/:userId", async (req, res) => {
+// 5. 사용자 정보 삭제 DELETE : localhost:3018/api/users/:userId  (성공했는데 실패)
+router.delete("/:userId", async (req, res) => {
   const { userId } = req.params;
   const { email, password } = req.body;
   const user = await Users.findOne({

@@ -12,7 +12,11 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(express.static("assets")); // assets이라는 폴더를 만들면 그 안에 폴더들은  html, css, js, 이미지 등 "정적 파일"에 대한 기본 경로를 제공해 준다
 app.use(express.urlencoded({ extended: false })); // 즉 locathost:3018/index.html 브라우저에서 연결가능.
-app.use('/api', [usersRouter, postsRouter, postLikesRouter, commentsRouter, commentLikesRouter]);
+app.use('/api/users', [usersRouter]);
+app.use('/api/posts', [postsRouter, postLikesRouter]);
+app.use('/api/posts/:postId/comments', [commentsRouter]);
+app.use('/api/posts/:postId/comments/:commentId/like', [commentLikesRouter]);
+
 
 app.listen(PORT, () => {
   console.log(PORT, '포트로 서버가 실행되었습니다.');

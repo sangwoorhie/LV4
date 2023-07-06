@@ -6,7 +6,7 @@ const sequelize = require('sequelize');
 
 
 // 1. 댓글 작성 POST : localhost:3018/api/posts/:postId/comments (성공)
-router.post("/posts/:postId/comments", Authmiddleware, async (req, res) => {
+router.post("/", Authmiddleware, async (req, res) => {
     try{
         if(!req.params || !req.body){
             return res.status(412).json({message: "데이터 형식이 올바르지 않습니다."})
@@ -14,12 +14,12 @@ router.post("/posts/:postId/comments", Authmiddleware, async (req, res) => {
     const { postId } = req.params;
     const { content } = req.body;
     const { userId } = res.locals.user;
-    const ExistsPost = await Posts.findOne({where : { postId }});
+    const ExistsPost = await Posts.findOne({where : {postId}});
 
     if (!ExistsPost) {
         return res.status(404).json({message: "게시글이 존재하지 않습니다."})
     } else if (!content) {
-        return res.status(412).json({message: "댓글 형식이 올바르지 않습니다."})
+        return res.status(412).json({message: "댓글을 입력해 주세요."})
     } else if (!userId){
         return res.status(403).json({message: "로그인 후 이용할 수 있는 기능입니다."})
     }
@@ -38,7 +38,7 @@ router.post("/posts/:postId/comments", Authmiddleware, async (req, res) => {
 
 
 // 2. 게시글당 댓글 목록조회 GET : localhost:3018/api/posts/:postId/comments (성공)
-router.get("/posts/:postId/comments", async (req, res) => {
+router.get("/", async (req, res) => {
     try{
         if(!req.params || !req.body){ 
             return res.status(400).json({ message: "데이터 형식이 올바르지 않습니다." 
@@ -55,7 +55,7 @@ router.get("/posts/:postId/comments", async (req, res) => {
     if(!ExistsPost) {
         return res.status(404).json({message: "게시글이 존재하지 않습니다."})
     } else if (!commentList){
-        return res.status(404).json({message: "댓글이 없습니다."})
+        return res.status(404).json({message: "해당 게시글의 댓글이 조회되지 않습니다."})
     }
     return res.status(200).json({ "댓글 목록": commentList }); 
 
@@ -80,7 +80,7 @@ router.get("/posts/:postId/comments", async (req, res) => {
 
 
 // 3. 댓글 수정 PUT : localhost:3018/api/posts/:postId/comments/:commentId (성공)
-router.put('/posts/:postId/comments/:commentId', Authmiddleware, async (req, res) => {
+router.put('/:commentId', Authmiddleware, async (req, res) => {
     try{
         if(!req.params || !req.body){
             return res.status(412).json({ message: "데이터 형식이 올바르지 않습니다." })
@@ -114,7 +114,7 @@ router.put('/posts/:postId/comments/:commentId', Authmiddleware, async (req, res
 
 
 // 4. 댓글 삭제 DELETE : localhost:3018/api/posts/:postId/comments/:commentId (성공)
-router.delete('/posts/:postId/comments/:commentId', Authmiddleware, async (req, res) => {
+router.delete('/:commentId', Authmiddleware, async (req, res) => {
     try{
         if(!req.params || !req.body){
             return res.status(400).json({ message: "데이터 형식이 올바르지 않습니다." })
