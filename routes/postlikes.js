@@ -61,7 +61,7 @@ router.get('/posts/:postId/like', async (req, res) => {
    try{
     const { postId } = req.params;
     const ExistsPost = await Posts.findOne({where: {postId}})
-    const LikedCount = await PostLikes.findAndCountAll({where: {postId}}); //시퀄라이즈 쿼리문
+    const LikedCount = await PostLikes.findAndCountAll({where: {postId}}); // 전체좋아요 수
     if(!ExistsPost){
         return res.status(404).json({message: "게시글이 존재하지 않습니다."})
     } else if(!LikedCount){

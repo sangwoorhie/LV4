@@ -12,11 +12,13 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
 
+      // 1. Users모델에서
       this.belongsTo(models.Users, { 
         targetKey: 'userId', 
         foreignKey: 'userId', 
       });
 
+      // 2. Posts모델에서
       this.belongsTo(models.Posts, { // 2. Users 모델에게 N:1 관계 설정을 합니다.
         targetKey: 'postId', // 3. Users 모델의 userId 컬럼을
         foreignKey: 'postId', // 4. Posts 모델의 UserId 컬럼과 연결합니다.

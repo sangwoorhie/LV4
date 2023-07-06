@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Authmiddleware = require("../middlewares/auth-middleware")
-const { Posts, Users } = require("../models")
+const { Posts, Users, PostLikes } = require("../models")
 const { Op } = require("sequelize");
 
 
@@ -18,11 +18,8 @@ try{
     } else if (!userId){
         return res.status(401).json({message: "로그인 후 이용할 수 있는 기능입니다."})
     }
-    const post = await Posts.create({
-        UserId: userId,
-        title,
-        content,
-    });
+    const post = await Posts.create({ UserId: userId, title, content }
+    );
     return res.status(201).json({ message: "게시글이 등록되었습니다." }) //data
 }catch(error){
     console.log(error);
@@ -35,16 +32,17 @@ try{
 router.get('/posts', async (req, res) => {
     const postList = await Posts.findAll({
         attributes: ['postId', 'title', 'createdAt', 'updatedAt'],
-        include: [{model: Users, attributes: ["nickname"]}],
+        include: [{model: Users, attributes: ["nickname"]}, {model: PostLikes, attributes: ["likedCount"] }],
         order: [['createdAt', 'DESC']], //createdAt을 기준으로 내림차순 정렬
     });
     return res.status(200).json({"게시글 목록": postList}); // data
 });
 
 
+// likedCount 가 "좋아요 수"가 아닌 넘버링 형태로 나오고, LikedCount는 좋아요수는 나오지만 밑에 전체내용 다나옴
 
 
-// 3. 게시글 상세조회 GET : localhost:3018/api/posts/:postId (성공)
+// 3. 게시글 상세조회 GET : localhost:3018/api/posts/:postId (성공) 
 router.get('/posts/:postId', async (req, res) => {
     try{
         if(!req.params){ return res.status(400).json({message: "데이터 형식이 올바르지 않습니다."})}
@@ -52,10 +50,11 @@ router.get('/posts/:postId', async (req, res) => {
     const { postId } = req.params;
     const post = await Posts.findOne({ //Posts모델에서 아래 5가지 컬럼을, Users모델에서 nickname 컬럼을 가져온다.
         attributes: ['postId', 'title', 'content', 'createdAt', 'updatedAt'],
-        include: [{model: Users, attributes: ['nickname']}],
+        include: [{model: Users, attributes: ['nickname']}, {model: PostLikes, attributes: ["likedCount"] }],
         where: { postId } // Posts모델의 postId를 기준으로 조회한다.
     })
-    return res.status(200).json({"게시글 조회": post}); // data //singlePost
+    const LikedCount = await PostLikes.findAndCountAll({where: {postId}});
+    return res.status(200).json({"게시글 조회": post, "좋아요 수": LikedCount}); // data //singlePost
 }catch(error){
     console.log(error);
     return res.status(400).json({message:"게시글 조회에 실패했습니다."})}
