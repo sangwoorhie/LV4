@@ -22,10 +22,11 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'PostId', // 4. Comments 모델의 PostId 컬럼과 연결합니다.
       });
 
-      // this.belongsTo(models.UserInfos, { 
-      //   targetKey: 'UserId', 
-      //   foreignKey: 'UserId', 
-      // });
+        // 1. Comments - Posts
+      this.belongsTo(models.CommentLikes, { // 2. Posts 모델에게 N:1 관계 설정을 합니다.
+        targetKey: 'commentId', // 3. Posts 모델의 postId 컬럼을
+        foreignKey: 'commentId', // 4. Comments 모델의 PostId 컬럼과 연결합니다.
+      });
 
 
     }
