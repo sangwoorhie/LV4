@@ -5,7 +5,7 @@ const Authmiddleware = require("../middlewares/auth-middleware")
 
 
 // 1. 댓글 좋아요 POST : localhost:3018/api/posts/:postId/comments/:commentId/like (성공)
-router.post("/", Authmiddleware, async (req, res) => {
+router.post("/:postId/comments/:commentId/like", Authmiddleware, async (req, res) => {
     try{
         if(!req.params || !req.body){
             return res.status(412).json({message: "데이터 형식이 올바르지 않습니다."})
@@ -33,7 +33,7 @@ router.post("/", Authmiddleware, async (req, res) => {
 
 
 // 2. 댓글 좋아요 취소 DELETE : localhost:3018/api/posts/:postId/comments/:commentId/like (성공)
-router.delete('/', Authmiddleware, async (req, res) => {
+router.delete('/:postId/comments/:commentId/like', Authmiddleware, async (req, res) => {
   try{
     if(!req.params || !req.body){
         return res.status(412).json({message: "데이터 형식이 올바르지 않습니다."})
@@ -60,7 +60,7 @@ router.delete('/', Authmiddleware, async (req, res) => {
 
 
 // 3. 댓글당 좋아요 조회 GET : localhost:3018/api/posts/:postId/comments/:commentId/like (성공)
-router.get('/', async (req, res) => {
+router.get('/:postId/comments/:commentId/like', async (req, res) => {
     try{
         const { postId, commentId } = req.params;
         const ExistsPost = await Posts.findOne({where: {postId}})

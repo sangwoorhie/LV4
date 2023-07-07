@@ -32,8 +32,8 @@ try{
 router.get('/', async (req, res) => {
     const postList = await Posts.findAll({
         raw: true, // 모델 인스턴스가 아닌, 데이터만 반환.
-        attributes: ['postId', 'title', 'createdAt', 'updatedAt'],
-        include: [{model: Users, attributes: ["nickname"]}, {model: PostLikes, attributes: ["likeId"]}],
+        attributes: ['postId', 'title', 'createdAt', 'updatedAt'], // 아래 alias (as) 적용안됨
+        include: [{model: Users, as:["nickname"], attributes: ["nickname"]}, {model: PostLikes, as:["like"], attributes: ["likeId"]}],
         order: [['createdAt', 'DESC']], //createdAt을 기준으로 내림차순 정렬
     });
     return res.status(200).json({"게시글 목록": postList}); // data

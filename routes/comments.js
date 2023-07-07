@@ -6,7 +6,7 @@ const sequelize = require('sequelize');
 
 
 // 1. 댓글 작성 POST : localhost:3018/api/posts/:postId/comments (성공)
-router.post("/", Authmiddleware, async (req, res) => {
+router.post("/:postId/comments", Authmiddleware, async (req, res) => {
     try{
         if(!req.params || !req.body){
             return res.status(412).json({message: "데이터 형식이 올바르지 않습니다."})
@@ -38,7 +38,7 @@ router.post("/", Authmiddleware, async (req, res) => {
 
 
 // 2. 게시글당 댓글 목록조회 GET : localhost:3018/api/posts/:postId/comments (성공)
-router.get("/", async (req, res) => {
+router.get("/:postId/comments", async (req, res) => {
     try{
         if(!req.params || !req.body){ 
             return res.status(400).json({ message: "데이터 형식이 올바르지 않습니다." 
