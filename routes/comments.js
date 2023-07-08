@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { Comments, Posts, Users } = require('../models');
 const Authmiddleware = require("../middlewares/auth-middleware")
-const sequelize = require('sequelize');
+const { Op } = require("sequelize");
 
 
 // 1. 댓글 작성 POST : localhost:3018/api/posts/:postId/comments (성공)
@@ -47,6 +47,7 @@ router.get("/:postId/comments", async (req, res) => {
     const { postId } = req.params;
     const ExistsPost = await Posts.findOne({where:{postId}})
     const commentList = await Comments.findAll({
+        raw: true,
         attributes:['commentId', 'userId', 'comment', 'createdAt', 'updatedAt'],
         include: [{model: Users, attributes:['nickname']}], // 목록조회에 닉네임 추가.
         where: {postId},
@@ -79,7 +80,7 @@ router.get("/:postId/comments", async (req, res) => {
     // return res.json({ comments: cmt }); 
 
 
-// 3. 댓글 수정 PUT : localhost:3018/api/posts/:postId/comments/:commentId (성공)
+// 3. 댓글 수정 PUT : localhost:3018/api/posts/:postId/comments/:commentId (실패)
 router.put('/:commentId', Authmiddleware, async (req, res) => {
     try{
         if(!req.params || !req.body){
@@ -102,7 +103,7 @@ router.put('/:commentId', Authmiddleware, async (req, res) => {
         } else if (userId !== existComment.UserId) {
             return res.status(403).json({ message: "본인이 작성한 댓글만 수정할 수 있습니다." })
         } else if (userId === existComment.UserId ){ // 대문자인이유는 Comments모델의 UserId컬럼이 대문자로시작. 
-            await Comments.update({comment: content}, {where: {commentId}});
+            await Comments.update({comment: content}, {where: {[Op.and]: [{commentId}, {UserId: userId}]} });
             return res.status(200).json({ message: "댓글이 수정되었습니다." })
         }
     } catch(error){
@@ -113,7 +114,7 @@ router.put('/:commentId', Authmiddleware, async (req, res) => {
 
 
 
-// 4. 댓글 삭제 DELETE : localhost:3018/api/posts/:postId/comments/:commentId (성공)
+// 4. 댓글 삭제 DELETE : localhost:3018/api/posts/:postId/comments/:commentId (실패)
 router.delete('/:commentId', Authmiddleware, async (req, res) => {
     try{
         if(!req.params || !req.body){

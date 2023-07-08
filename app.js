@@ -23,6 +23,10 @@ app.listen(PORT, () => {
 })
 
 
+
+
+
+
 // MySQL
 // SequelizeMeta = migration 정보를 갖고있음
 

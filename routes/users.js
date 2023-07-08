@@ -15,7 +15,7 @@ router.post("/signup", async (req, res) => {
   
   try{const isExistUser = await Users.findOne({ where: { email } });
 
-  if (isExistUser === email) {
+  if (isExistUser == email) {
     return res.status(409).json({ message: "이미 존재하는 이메일입니다. 다시 확인해주세요." });
   } else if (password !== confirmPassword) {
     return res.status(400).json({ message: "비밀번호와 확인 비밀번호가 일치하지 않습니다." })

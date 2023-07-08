@@ -5,7 +5,7 @@ module.exports = async(req, res, next) => {
     const { Authorization } = req.cookies;
     const [ TokenType, Token ] = (Authorization ?? "" ).split(" ")
     if(TokenType !== "Bearer"){
-        res.status(401).json({ message: "토큰 타입이 일치하지 않습니다." });
+        res.status(403).json({ message: "토큰 타입이 일치하지 않습니다." });
     } else if (!Token) {
         res.status(401).json({ message: "토큰값이 존재하지 않습니다." })
     }

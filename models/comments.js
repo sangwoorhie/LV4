@@ -10,20 +10,20 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
 
-      // 1. Comments - Users
+      // 1. Comments모델 - Users모델 N:1
       this.belongsTo(models.Users, { // 2. Users 모델에게 N:1 관계 설정을 합니다.
         targetKey: 'userId', // 3. Users 모델의 userId 컬럼을
         foreignKey: 'UserId', // 4. Comments 모델의 UserId 컬럼과 연결합니다.
       });
 
-      // 1. Comments - Posts
+      // 1. Comments모델 - Posts모델 N:1
       this.belongsTo(models.Posts, { // 2. Posts 모델에게 N:1 관계 설정을 합니다.
         targetKey: 'postId', // 3. Posts 모델의 postId 컬럼을
         foreignKey: 'PostId', // 4. Comments 모델의 PostId 컬럼과 연결합니다.
       });
 
-        // 1. Comments - Posts
-      this.belongsTo(models.CommentLikes, { // 2. Posts 모델에게 N:1 관계 설정을 합니다.
+        // 1. Comments모델 - CommentLikes모델 1:N
+      this.hasMany(models.CommentLikes, { // 2. Posts 모델에게 N:1 관계 설정을 합니다.
         targetKey: 'commentId', // 3. Posts 모델의 postId 컬럼을
         foreignKey: 'commentId', // 4. Comments 모델의 PostId 컬럼과 연결합니다.
       });

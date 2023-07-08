@@ -10,19 +10,30 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
 
-      // 1. Users - Posts
+      // 1. Users모델 - Posts모델 1:N
       this.hasMany(models.Posts, { // 2. Posts 모델에게 1:N 관계 설정을 합니다.
         sourceKey: 'userId', // 3. Users 모델의 userId 컬럼을
         foreignKey: 'UserId', // 4. Posts 모델의 UserId 컬럼과 연결합니다.
       });
 
-      // 1. Users - Comments
+      // 1. Users모델 - Comments모델 1:N
       this.hasMany(models.Comments, { // 2. Comments 모델에게 1:N 관계 설정을 합니다.
         sourceKey: 'userId', // 3. Users 모델의 userId 컬럼을
         foreignKey: 'UserId', // 4. Comments 모델의 UserId 컬럼과 연결합니다.
       });
-    }
-  }
+
+      // 1. Users모델 - PostLikes모델 1:N
+      this.hasMany(models.PostLikes, {
+        sourceKey: 'userId', 
+        foreignKey: 'userId', 
+      });
+
+      // 1. Users모델 - CommentLikes모델 1:N
+      this.hasMany(models.CommentLikes, {
+        sourceKey: 'userId', 
+        foreignKey: 'UserId', 
+      });
+    }}
 
   Users.init(
     {
