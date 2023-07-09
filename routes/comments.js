@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { Comments, Posts, Users } = require('../models');
+const { Comments, Posts, Users, CommentLikes } = require('../models');
 const Authmiddleware = require("../middlewares/auth-middleware")
 const { Op } = require("sequelize");
 
@@ -49,10 +49,11 @@ router.get("/:postId/comments", async (req, res) => {
     const commentList = await Comments.findAll({
         raw: true,
         attributes:['commentId', 'userId', 'comment', 'createdAt', 'updatedAt'],
-        include: [{model: Users, attributes:['nickname']}], // 목록조회에 닉네임 추가.
+        include: [{model: Users, attributes:['nickname'], as:['nickname']}, {model: CommentLikes, attributes:['likeId'], as:['likes']}], // 목록조회에 닉네임 추가.
         where: {postId},
         order: [["createdAt", "DESC"]] // 작성일기준 내림차순
     });
+    // const LikedCount = await CommentLikes.count({where: {commentId: Number(commentId)}});
     if(!ExistsPost) {
         return res.status(404).json({message: "게시글이 존재하지 않습니다."})
     } else if (!commentList){
@@ -80,8 +81,8 @@ router.get("/:postId/comments", async (req, res) => {
     // return res.json({ comments: cmt }); 
 
 
-// 3. 댓글 수정 PUT : localhost:3018/api/posts/:postId/comments/:commentId (실패)
-router.put('/:commentId', Authmiddleware, async (req, res) => {
+// 3. 댓글 수정 PUT : localhost:3018/api/posts/:postId/comments/:commentId (성공)
+router.put('/:postId/comments/:commentId', Authmiddleware, async (req, res) => {
     try{
         if(!req.params || !req.body){
             return res.status(412).json({ message: "데이터 형식이 올바르지 않습니다." })
@@ -114,8 +115,8 @@ router.put('/:commentId', Authmiddleware, async (req, res) => {
 
 
 
-// 4. 댓글 삭제 DELETE : localhost:3018/api/posts/:postId/comments/:commentId (실패)
-router.delete('/:commentId', Authmiddleware, async (req, res) => {
+// 4. 댓글 삭제 DELETE : localhost:3018/api/posts/:postId/comments/:commentId (성공)
+router.delete('/:postId/comments/:commentId', Authmiddleware, async (req, res) => {
     try{
         if(!req.params || !req.body){
             return res.status(400).json({ message: "데이터 형식이 올바르지 않습니다." })

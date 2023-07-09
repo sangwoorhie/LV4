@@ -33,7 +33,7 @@ router.get('/', async (req, res) => {
     const postList = await Posts.findAll({
         raw: true, // 모델 인스턴스가 아닌, 데이터만 반환.
         attributes: ['postId', 'title', 'createdAt', 'updatedAt'], // 아래 alias (as) 적용안됨
-        include: [{model: Users, as:["nickname"], attributes: ["nickname"]}, {model: PostLikes, as:["like"], attributes: ["likeId"]}],
+        include: [{model: Users, attributes: ["nickname"], as:['nickname']}, {model: PostLikes, attributes: ["likeId"], as:['likes']}],
         order: [['createdAt', 'DESC']], //createdAt을 기준으로 내림차순 정렬
     });
     return res.status(200).json({"게시글 목록": postList}); // data
@@ -87,8 +87,14 @@ router.put('/:postId', Authmiddleware, async (req, res) => {
     const post = await Posts.findOne({ where: { postId } });
     if(!post) {
         return res.status(404).json({message: "게시글이 존재하지 않습니다."})
-    } else if (userId !== post.UserId) {
+    } else if (!userId) {
+        return res.status(401).json({ message: "로그인 후 이용할 수 있는 기능입니다." })
+    }else if (userId !== post.UserId) {
         return res.status(401).json({ message: "본인이 작성한 게시글만 수정할 수 있습니다." })
+    } else if (!title) {
+        return res.status(412).json({message: "제목을 입력해주세요."})
+    } else if (!content) {
+        return res.status(412).json({message: "내용을 입력해주세요."})
     }
     await Posts.update(
         { title, content },
@@ -108,7 +114,9 @@ router.delete('/:postId', Authmiddleware, async (req, res) => {
     const post = await Posts.findOne({ where : {postId} });
     if(!post) {
         return res.status(404).json({ message: "게시글이 존재하지 않습니다." }) 
-    } else if (userId !== post.UserId){
+    } else if (!userId){
+        return res.status(401).json({ message: "로그인 후 이용할 수 있는 기능입니다."});
+    }else if (userId !== post.UserId){
         return res.status(401).json({ message: "본인이 작성한 게시글만 삭제할 수 있습니다."});
     }
     await Posts.destroy({
