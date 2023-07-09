@@ -53,7 +53,7 @@ router.get("/:postId/comments", async (req, res) => {
         where: {postId},
         order: [["createdAt", "DESC"]] // 작성일기준 내림차순
     });
-    // const LikedCount = await CommentLikes.count({where: {commentId: Number(commentId)}});
+    // const LikedCount = await PostLikes.count({where: {postId: Number(postId)}});
     if(!ExistsPost) {
         return res.status(404).json({message: "게시글이 존재하지 않습니다."})
     } else if (!commentList){

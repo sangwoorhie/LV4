@@ -36,6 +36,9 @@ router.get('/', async (req, res) => {
         include: [{model: Users, attributes: ["nickname"], as:['nickname']}, {model: PostLikes, attributes: ["likeId"], as:['likes']}],
         order: [['createdAt', 'DESC']], //createdAt을 기준으로 내림차순 정렬
     });
+
+
+
     return res.status(200).json({"게시글 목록": postList}); // data
 });
 
@@ -55,9 +58,10 @@ router.get('/:postId', async (req, res) => {
         where: { postId } // Posts모델의 postId를 기준으로 조회한다.
     })
     const LikedCount = await PostLikes.count({where: {postId: Number(postId)}});
- 
+    post.LikedCount = LikedCount // post에 LikedCount도 추가됨
+
     if(!post) {res.status(404).json({message: "게시글이 존재하지 않습니다."})}
-    return res.status(200).json({"게시글 조회": post, "좋아요": LikedCount}); // data //singlePost
+    return res.status(200).json({"게시글 조회": post}); // data //singlePost //  "좋아요": LikedCount
 }catch(error){
     console.log(error);
     return res.status(400).json({message:"게시글 조회에 실패했습니다."})}
