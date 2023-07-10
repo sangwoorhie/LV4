@@ -86,30 +86,20 @@ router.get('/:postId/like', async (req, res) => {
 
 
 
-// 4. 전체 게시글 좋아요 조회 GET: localhost:3018/api/posts/like  (안됨)
-router.get("/like", async (req, res) => {
-    const likeList = await PostLikes.findAll({
-        attributes: ['postId', 'likedCount', 'createdAt', 'updatedAt'],
-        order: [['createdAt', 'DESC']] // createdAt기준 내림차순
-    });
-    return res.status(200).json({"좋아요 목록": likeList});
+// 4. 사용자별 게시글 좋아요 조회 GET: localhost:3018/api/posts/like/:userId  (성공)
+router.get("/like/:userId", async (req, res) => {
+  try{
+    const {userId} = req.params;
+    const likedUser = await PostLikes.findAll({where: {userId}});
+    if(!userId || !likedUser) {
+        return res.status(404).json({message: "사용자가 존재하지 않습니다."})
+    }
+    return res.status(200).json({likedUser})
+    }catch(error){
+        console.log(error);
+        return res.status(400).json({message: "요청이 정상적으로 이루어지지 않았습니다."})
+    }
 });
-
-
-
-
-// // 5. 유저당 좋아요 조회 GET : localhost:3018/api/posts/:postId/like/:userId (null값으로 나옴)
-// router.get('/posts/:postId/like/:userId', async (req, res) => {
-//     try{
-//         const { postId, userId } = req.params;
-//         const likedUser = await PostLikes.findOne({where: {postId, userId}});
-//         return res.status(200).json({likedUser: likedUser})
-//     }catch(error){
-//         console.log(error);
-//         res.status(400).json({message: "요청이 정상적으로 이루어지지 않았습니다."})
-//     }   
-// })
-
 
 
 

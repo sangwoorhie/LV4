@@ -37,8 +37,6 @@ router.get('/', async (req, res) => {
         order: [['createdAt', 'DESC']], //createdAt을 기준으로 내림차순 정렬
     });
 
-
-
     return res.status(200).json({"게시글 목록": postList}); // data
 });
 
