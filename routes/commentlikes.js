@@ -5,7 +5,7 @@ const Authmiddleware = require("../middlewares/auth-middleware")
 const { Op } = require("sequelize");
 
 
-// 1. 댓글 좋아요 POST : localhost:3018/api/posts/:postId/comments/:commentId/like (성공)
+// 1. 댓글 좋아요 생성 POST : localhost:3018/api/posts/:postId/comments/:commentId/like (성공)
 router.post("/:postId/comments/:commentId/like", Authmiddleware, async (req, res) => {
     try{
         if(!req.params || !req.body){
@@ -59,17 +59,17 @@ router.delete('/:postId/comments/:commentId/like', Authmiddleware, async (req, r
         return res.status(404).json({message: "댓글이 존재하지 않습니다."})
     } else if (!AlreadyClickedUser) {
         return res.status(401).json({message: "본인이 누른 좋아요만 취소 가능합니다."})
-    } {
+    } 
         await CommentLikes.destroy({where: {[Op.and]: [{userId: Number(userId)}, {commentId: Number(commentId)}]}});
         return res.status(200).json({message: "좋아요가 취소되었습니다."})
-    }}catch(error){
+    }catch(error){
         console.log(error);
         return res.status(400).json({message:"요청이 정상적으로 이루어지지 않았습니다."})
     }
 });
 
 
-// 3. 댓글당 좋아요 조회 GET : localhost:3018/api/posts/:postId/comments/:commentId/like (성공)
+// 3. 댓글 좋아요 조회 GET : localhost:3018/api/posts/:postId/comments/:commentId/like (성공)
 router.get('/:postId/comments/:commentId/like', async (req, res) => {
     try{
         const { postId, commentId } = req.params;

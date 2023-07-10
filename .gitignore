@@ -152,6 +152,6 @@ node_modules/
 ##
 ./config.js
 ##
-
+./middlewares/upload-middleware
 
 # End of https://www.toptal.com/developers/gitignore/

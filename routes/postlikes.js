@@ -6,7 +6,7 @@ const { Op } = require("sequelize");
 
 
 
-// 1.  게시글 좋아요 누르기 POST : localhost:3018/api/posts/:postId/like  (성공)
+// 1.  게시글 좋아요 생성 POST : localhost:3018/api/posts/:postId/like  (성공)
 router.post('/:postId/like', Authmiddleware, async (req, res, next) => {
     try{
         if(!req.params || !req.body){
@@ -37,7 +37,7 @@ router.post('/:postId/like', Authmiddleware, async (req, res, next) => {
 
 
 
-// 2. 게시글 좋아요 취소하기 DELETE : localhost:3018/api/posts/:postId/like (성공)
+// 2. 게시글 좋아요 취소 DELETE : localhost:3018/api/posts/:postId/like (성공)
 router.delete('/:postId/like', Authmiddleware, async (req, res) => {
     try {
         if(!req.params || !req.body){
@@ -66,7 +66,7 @@ router.delete('/:postId/like', Authmiddleware, async (req, res) => {
 
 
 
-// 3. 게시글당 좋아요 조회 GET : localhost:3018/api/posts/:postId/like (성공)
+// 3. 게시글 좋아요 조회 GET : localhost:3018/api/posts/:postId/like (성공)
 router.get('/:postId/like', async (req, res) => {
    try{
     const { postId } = req.params;
