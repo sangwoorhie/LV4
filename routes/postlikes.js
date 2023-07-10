@@ -91,10 +91,11 @@ router.get("/like/:userId", async (req, res) => {
   try{
     const {userId} = req.params;
     const likedUser = await PostLikes.findAll({where: {userId}});
+    const LikedCount = await PostLikes.count({where: {userId: Number(userId)}});
     if(!userId || !likedUser) {
         return res.status(404).json({message: "사용자가 존재하지 않습니다."})
     }
-    return res.status(200).json({likedUser})
+    return res.status(200).json({...likedUser, LikedCount})
     }catch(error){
         console.log(error);
         return res.status(400).json({message: "요청이 정상적으로 이루어지지 않았습니다."})

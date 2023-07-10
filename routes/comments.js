@@ -14,9 +14,9 @@ router.post("/:postId/comments", Authmiddleware, async (req, res) => {
     const { postId } = req.params;
     const { content } = req.body;
     const { userId } = res.locals.user;
-    const ExistsPost = await Posts.findOne({where : {postId}});
+    const post = await Posts.findOne({where : {postId}});
 
-    if (!ExistsPost) {
+    if (!post) {
         return res.status(404).json({message: "게시글이 존재하지 않습니다."})
     } else if (!content) {
         return res.status(412).json({message: "댓글을 입력해 주세요."})
@@ -37,7 +37,7 @@ router.post("/:postId/comments", Authmiddleware, async (req, res) => {
 
 
 
-// 2. 게시글당 댓글 목록조회 GET : localhost:3018/api/posts/:postId/comments (성공)
+// 2. 댓글 조회 GET : localhost:3018/api/posts/:postId/comments (성공)
 router.get("/:postId/comments", async (req, res) => {
     try{
         if(!req.params || !req.body){ 
@@ -45,21 +45,22 @@ router.get("/:postId/comments", async (req, res) => {
         })}
 
     const { postId } = req.params;
-    const ExistsPost = await Posts.findOne({where:{postId}})
-    const commentList = await Comments.findAll({
+    const post = await Posts.findOne({where:{postId}})
+    const comment = await Comments.findAll({
         raw: true,
         attributes:['commentId', 'userId', 'comment', 'createdAt', 'updatedAt'],
         include: [{model: Users, attributes:['nickname'], as:['nickname']}, {model: CommentLikes, attributes:['likeId'], as:['likes']}], // 목록조회에 닉네임 추가.
         where: {postId},
         order: [["createdAt", "DESC"]] // 작성일기준 내림차순
     });
-    // const LikedCount = await PostLikes.count({where: {postId: Number(postId)}});
-    if(!ExistsPost) {
+    const LikedCount = await CommentLikes.count({where: {postId: Number(postId)}})
+    // comment.LikedCount = LikedCount
+    if(!post) {
         return res.status(404).json({message: "게시글이 존재하지 않습니다."})
-    } else if (!commentList){
+    } else if (!comment){
         return res.status(404).json({message: "해당 게시글의 댓글이 조회되지 않습니다."})
     }
-    return res.status(200).json({ "댓글 목록": commentList }); 
+    return res.status(200).json({"댓글 목록": {...comment, "좋아요": LikedCount}}); 
 
     }catch(error){
         console.log(error)

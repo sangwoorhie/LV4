@@ -52,14 +52,14 @@ router.get('/:postId', async (req, res) => {
     const post = await Posts.findOne({ //Posts모델에서 아래 5가지 컬럼을, Users모델에서 nickname 컬럼을 가져온다.
         raw: true, // 모델 인스턴스가 아닌, 데이터만 반환.
         attributes: ['postId', 'title', 'content', 'createdAt', 'updatedAt'],
-        include: [{model: Users, attributes: ['nickname']}],
-        where: { postId } // Posts모델의 postId를 기준으로 조회한다.
+        include: [{model: Users, attributes: ['nickname'], as: ['nickname']}, {model: PostLikes, attributes: ['postId'], as:['likes']}],
+        where: { postId }, // Posts모델의 postId를 기준으로 조회한다.
     })
     const LikedCount = await PostLikes.count({where: {postId: Number(postId)}});
-    post.LikedCount = LikedCount // post에 LikedCount도 추가됨
+    // post.LikedCount = LikedCount // post에 LikedCount도 추가됨
 
     if(!post) {res.status(404).json({message: "게시글이 존재하지 않습니다."})}
-    return res.status(200).json({"게시글 조회": post}); // data //singlePost //  "좋아요": LikedCount
+    return res.status(200).json({"게시글 조회": {...post, "좋아요": LikedCount}}); // data //singlePost //  "좋아요": LikedCount
 }catch(error){
     console.log(error);
     return res.status(400).json({message:"게시글 조회에 실패했습니다."})}

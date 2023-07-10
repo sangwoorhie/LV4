@@ -113,7 +113,7 @@ router.patch("/:userId", async(req, res) => { // put 전체수정, patch 부분�
 })
 
 
-// 5. 사용자 정보 삭제 DELETE : localhost:3018/api/users/:userId  (성공했는데 실패)
+// 5. 사용자 정보 삭제 DELETE : localhost:3018/api/users/:userId  (성공)
 router.delete("/:userId", async (req, res) => {
   const { userId } = req.params;
   const { email, password } = req.body;
