@@ -21,7 +21,7 @@ router.post('/:postId/like', Authmiddleware, async (req, res, next) => {
 
         if (!userId) {
             return res.status(403).json({message: "로그인 후 이용할 수 있는 기능입니다."})
-        } else if (!ExistsPost || !postId) {
+        } else if (!ExistsPost) {
             return res.status(404).json({message: "존재하지 않는 게시글입니다."})
         } else if (AlreadyClickedUser) {
             return res.status(401).json({message: "이미 좋아요를 누른 게시글입니다."})
@@ -50,7 +50,7 @@ router.delete('/:postId/like', Authmiddleware, async (req, res) => {
 
         if(!userId){
             return res.status(403).json({message: "로그인 후 이용할 수 있는 기능입니다."})
-        } else if (!ExistsPost || !postId) {
+        } else if (!ExistsPost) {
             return res.status(404).json({message: "게시글이 존재하지 않습니다."})
         } else if (!AlreadyClickedUser){
             return res.status(401).json({message: "본인이 누른 좋아요만 취소가 가능합니다."})

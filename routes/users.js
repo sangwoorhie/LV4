@@ -5,8 +5,8 @@ const jwt = require("jsonwebtoken");
 
 
 
-// 비밀번호 정규식 (최소 4자 이상의 영문 대소문자 및 숫자)
-const passwordCheck = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]{4,}$/;
+const emailCheck = /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i; // 이메일 정규식
+const passwordCheck = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]{4,}$/; // 비밀번호 정규식 (최소 4자 이상의 영문 대소문자 및 숫자)
 
 
 // 1. 회원가입 POST : localhost:3018/api/users/signup (성공)
@@ -33,13 +33,14 @@ router.post("/signup", async (req, res) => {
     return res.status(409).json({ message: "성별을 입력해주세요." });
   } else if (!passwordCheck.test(password)) {
     return res.status(409).json({ message: "비밀번호는 최소 4자 이상의 영문 대소문자 및 숫자로 작성되어야 합니다." });
-  } else {
+  } else if (!emailCheck.test(email)){
+    return res.status(409).json({message: "이메일 형식이 올바르지 않습니다."})
+  }
 
   // Users 테이블에 사용자를 추가
   await Users.create({ email, password, nickname, age, gender: gender.toUpperCase(), profileImage}) // toUpperCase() 성별 대문자로
-
   return res.status(201).json({ message: "회원가입이 완료되었습니다." });
-}}
+}
 catch(error){console.log(error)
     res.status(400).json({ message: "요청한 데이터 형식이 올바르지 않습니다." })
 }
@@ -107,9 +108,9 @@ router.patch("/:userId", async(req, res) => { // put 전체수정, patch 부분�
     return res.status(409).json({message: "기존 비밀번호와 동일합니다. 다른 비밀번호로 바꾸어 주세요."})
   } else if (user.nickname !== nickname && ExistNickname){
     return res.status(409).json({message: "다른 회원이 이미 해당 닉네임을 사용중입니다."})
-  } else {
+  } 
     await Users.update({ nickname, password, age, gender, profileImage }, { where : {userId} })
-  } return res.status(201).json({ message: "회원정보 변경이 완료되었습니다." })
+    return res.status(201).json({ message: "회원정보 변경이 완료되었습니다." })
 })
 
 
@@ -127,16 +128,16 @@ router.delete("/:userId", async (req, res) => {
 
  if (!email){
   return res.status(409).json({message: "이메일을 입력해주세요."})
- } else if (!password){
+ }  else if (!password){
   return res.status(409).json({message: "비밀번호를 입력해주세요."})
- } else if (password !== user.password){
+ }  else if (password !== user.password){
   return res.status(401).json({message: "비밀번호가 일치하지 않습니다."})
- } else if (email !== user.email){
+ }  else if (email !== user.email){
   return res.status(401).json({message: "이메일이 일치하지 않습니다."})
- } else {
-  await Users.destroy({where : {userId}})
-  return res.status(201).json({message: "회원 탈퇴가 완료되었습니다."}) 
- }
+ } else if (password === user.password && email === user.email){
+    await Users.destroy({where : {userId}})
+    return res.status(201).json({message: "회원 탈퇴가 완료되었습니다."})
+    } 
 });
 
 
