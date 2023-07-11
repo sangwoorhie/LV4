@@ -37,7 +37,7 @@ router.post('/:postId/report', Authmiddleware, async (req, res) => {
 })
 
 
-// 2. 게시글 신고 취소 DELETE : localhost:3018/api/posts/:postId/report (무한루프)
+// 2. 게시글 신고 취소 DELETE : localhost:3018/api/posts/:postId/report ((성공하였으나, 신고10개받으면 기존댓글 지우는 기능 미구현. 주석대로 할 시 에러메시지나오는게 아니라 계속 processing)
 router.delete('/:postId/report', Authmiddleware, async (req, res) => {
     try{
         if(!req.params){
@@ -49,8 +49,8 @@ router.delete('/:postId/report', Authmiddleware, async (req, res) => {
         const AlreadyReportedUser = await PostReport.findOne({where: {[Op.and]: [{PostId: Number(postId)}, {reportUserId: Number(userId)}]}});
 
 
-        // CommentReport테이블에서 commentId컬럼만 갖고와서, where절로 commentId속성이 지정된 commentId값과 일치하는 값을 찾음.
-        // group으로 그 결과를 하나로 묶고, SQL구문(sequelize.literal)으로 commentId의 갯수가 9보다 큰 그룹만 선택하도록 필터링 설정함.
+        // PostReport테이블에서 postId컬럼만 갖고와서, where절로 postId속성이 지정된 postId값과 일치하는 값을 찾음.
+        // group으로 그 결과를 하나로 묶고, SQL구문(sequelize.literal)으로 postId의 갯수가 9보다 큰 그룹만 선택하도록 필터링 설정함.
 
         // const post = await PostReport.findOne({
         //     attributes: ["postId"],
@@ -58,13 +58,15 @@ router.delete('/:postId/report', Authmiddleware, async (req, res) => {
         //     group: ["postId"], 
         //     having: sequelize.literal(`COUNT(postId) > 9`) 
         // });
+
         // if (post){
         //     await Posts.destroy({where: {postId: post.postId}});
         //     await PostReport.destroy({where: {PostId: post.postId}});
-        //     return res.status(200).json({message: "댓글 신고가 취소되었습니다."})
-        // }
+        //     res.status(200).json({message: "게시글 신고가 취소되었습니다."})
+        // } 
+        //     res.status(400).json({message: "게시글 신고 취소에 실패했습니다."})
         
-
+        
         if(!post){
             return res.status(404).json({message: "게시글이 존재하지 않습니다."})
         } else if (!userId) {
