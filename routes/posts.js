@@ -78,9 +78,24 @@ router.get('/:postId', async (req, res) => {
     // }});
 
 
+// 4. 본인 게시글 조회 localhost:3018/api/posts/myposts
+router.get('/myposts', Authmiddleware, async (req, res) => {
+    const { userId } = res.locals.user;
+
+    const myPost = await Posts.findAll({
+        attributes:['postId', 'UserId', 'title', 'content', 'createdAt', 'updatedAt'],
+        order: [['createdAt', 'DESC']],
+        where: { UserId: userId }
+    });
+    if(!myPost) {
+        return res.status(404).json({message: "게시글이 존재하지 않습니다."})
+    } else {
+        return res.status(200).json({data: myPost})
+    }
+})
 
 
-// 4. 게시글 수정 PUT : localhost:3018/api/posts/:postId (성공)
+// 5. 게시글 수정 PUT : localhost:3018/api/posts/:postId (성공)
 router.put('/:postId', Authmiddleware, async (req, res) => {
     const { postId } = req.params;
     const { userId } = res.locals.user;
@@ -108,7 +123,7 @@ router.put('/:postId', Authmiddleware, async (req, res) => {
 
 
 
-// 5. 게시글 삭제 DELETE : localhost:3018/api/posts/:postId (성공)
+// 6. 게시글 삭제 DELETE : localhost:3018/api/posts/:postId (성공)
 router.delete('/:postId', Authmiddleware, async (req, res) => {
     const { postId } = req.params;
     const { userId } = res.locals.user;
