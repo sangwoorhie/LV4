@@ -91,3 +91,40 @@ localhost:3000/api
 
 댓글 신고 취소 (DELETE)
 -> /posts/:postId/comments/:commentId/report
+
+![image](https://github.com/sangwoorhie/LV4/assets/131964697/9bf2ec34-9267-4c5d-bad1-30db2aa55775)
+
+
+
+├─ .gitignore
+├─ app.js
+├─ middlewares
+│  └─ authMiddleware.js
+├─ migrations
+│  ├─ 20230704130124-create-users.js
+│  ├─ 20230704130136-create-posts.js
+│  ├─ 20230704130144-create-comments.js
+│  ├─ 20230705155509-create-post-likes.js
+│  ├─ 20230706022632-create-comment-likes.js
+│  ├─ 20230710084348-create-comment-report.js
+│  └─ 20230710084351-create-post-report.js
+├─ models
+│  ├─ commentlikes.js
+│  ├─ commentreport.js
+│  ├─ comments.js
+│  ├─ index.js
+│  ├─ postlike.js
+│  ├─ postreport.js
+│  ├─ posts.js
+│  └─ users.js
+├─ routes
+│  ├─ commentlikes.js
+│  ├─ commentReport.js
+│  ├─ comments.js
+│  ├─ postlikes.js
+│  ├─ postReport.js
+│  ├─ posts.js
+│  └─ users.js
+├─ package-lock.json
+├─ package.json
+└─ seeders
