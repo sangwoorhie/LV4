@@ -10,6 +10,7 @@ const commentRoportRouter = require("./routes/commentReport.js"); // 1댓글신�
 const app = express();
 const PORT = 3018;
 
+// cd LV4로 하고 app.js하기
 
 app.use(express.json());
 app.use(cookieParser());

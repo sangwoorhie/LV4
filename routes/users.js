@@ -2,6 +2,7 @@ const express = require("express");
 const { Users } = require("../models");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
+const Authmiddleware = require("../middlewares/auth-middleware")
 
 
 
@@ -65,6 +66,18 @@ router.post("/login", async (req, res) => {
     res.cookie("Authorization", `Bearer ${Token}`);
     return res.status(200).json({ message: "로그인 되었습니다." })
 }) 
+
+
+// 3. 로그아웃 POST : localhost:3018/api/users/logout (성공)
+router.post('/logout', Authmiddleware, async (req, res) => {
+  try {
+    res.clearCookie('authorization');
+    return res.status(200).json({ message: '로그아웃 되었습니다.' });
+  } catch {
+    return res.status(400).json({ message: '로그아웃에 실패하였습니다.' });
+  }
+});
+
 
 
 
